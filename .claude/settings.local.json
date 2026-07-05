@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npx electron *)",
+      "Bash(npx vite *)",
+      "Bash(timeout 15 npx electron .)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('dist-electron/main.js','utf8'\\); const matches=c.match\\(/require\\\\\\(\\\\\"[^\\\\\"]+\\\\\"\\\\\\)/g\\); console.log\\([...new Set\\(matches\\)].join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(timeout 20 npx electron .)",
+      "Bash(timeout 15 npx electron test-main.js)",
+      "Bash(timeout 15 ./node_modules/.bin/electron test-main.js)",
+      "Bash(npm ls *)",
+      "Bash(node scripts/build-electron.mjs)"
+    ]
+  }
+}

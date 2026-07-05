@@ -1,0 +1,31 @@
+appId: com.jizhang.app
+productName: 记账
+directories:
+  output: release
+
+win:
+  target:
+    - nsis
+  artifactName: ${productName}-${version}-setup.${ext}
+
+mac:
+  target:
+    - dmg
+  artifactName: ${productName}-${version}.${ext}
+  category: public.app-category.finance
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: 记账
+
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - package.json
+
+# 包含 sql.js 运行时需要的文件
+asarUnpack:
+  - node_modules/sql.js/**/*
