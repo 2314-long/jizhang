@@ -55,6 +55,9 @@ export async function getDatabase(): Promise<SqlJsDatabase> {
   // 初始化表结构
   initTables(db)
 
+  // 执行数据库迁移
+  runMigrations(db)
+
   // 初始化默认分类数据
   initCategories(db)
 
@@ -104,7 +107,8 @@ function initTables(database: SqlJsDatabase): void {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       icon TEXT DEFAULT '',
-      sort_order INTEGER DEFAULT 0
+      sort_order INTEGER DEFAULT 0,
+      is_preset INTEGER DEFAULT 0
     )
   `)
 
@@ -114,6 +118,7 @@ function initTables(database: SqlJsDatabase): void {
       main_category_id INTEGER NOT NULL,
       name TEXT NOT NULL,
       sort_order INTEGER DEFAULT 0,
+      is_preset INTEGER DEFAULT 0,
       FOREIGN KEY (main_category_id) REFERENCES main_categories(id),
       UNIQUE(main_category_id, name)
     )
@@ -144,17 +149,43 @@ function initCategories(database: SqlJsDatabase): void {
   ]
 
   for (const cat of categories) {
-    database.run('INSERT INTO main_categories (name, icon, sort_order) VALUES (?, ?, ?)', [cat.name, cat.icon, cat.sort])
+    database.run('INSERT INTO main_categories (name, icon, sort_order, is_preset) VALUES (?, ?, ?, 1)', [cat.name, cat.icon, cat.sort])
     const idResult = database.exec('SELECT last_insert_rowid()')
     const mainId = idResult[0]?.values[0]?.[0] as number
 
     cat.subs.forEach((subName, idx) => {
-      database.run('INSERT INTO sub_categories (main_category_id, name, sort_order) VALUES (?, ?, ?)', [mainId, subName, idx + 1])
+      database.run('INSERT INTO sub_categories (main_category_id, name, sort_order, is_preset) VALUES (?, ?, ?, 1)', [mainId, subName, idx + 1])
     })
   }
 
   saveDatabase()
   console.log('✅ 默认分类数据已初始化')
+}
+
+/**
+ * 数据库迁移：处理版本升级
+ */
+function runMigrations(database: SqlJsDatabase): void {
+  try {
+    // V2: 添加 is_preset 字段区分系统预设与用户自定义分类
+    const mainInfo = database.exec('PRAGMA table_info(main_categories)')
+    const mainCols = mainInfo[0]?.values.map((r: any) => r[1]) || []
+    if (!mainCols.includes('is_preset')) {
+      database.run('ALTER TABLE main_categories ADD COLUMN is_preset INTEGER DEFAULT 0')
+      database.run('UPDATE main_categories SET is_preset = 1')
+      console.log('✅ 迁移：main_categories 添加 is_preset 列')
+    }
+
+    const subInfo = database.exec('PRAGMA table_info(sub_categories)')
+    const subCols = subInfo[0]?.values.map((r: any) => r[1]) || []
+    if (!subCols.includes('is_preset')) {
+      database.run('ALTER TABLE sub_categories ADD COLUMN is_preset INTEGER DEFAULT 0')
+      database.run('UPDATE sub_categories SET is_preset = 1')
+      console.log('✅ 迁移：sub_categories 添加 is_preset 列')
+    }
+  } catch (err: any) {
+    console.error('数据库迁移失败:', err.message)
+  }
 }
 
 /**

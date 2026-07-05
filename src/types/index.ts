@@ -4,6 +4,7 @@ export interface MainCategory {
   name: string
   icon: string
   sort_order: number
+  is_preset: number
 }
 
 /** 二级分类 */
@@ -12,6 +13,7 @@ export interface SubCategory {
   main_category_id: number
   name: string
   sort_order: number
+  is_preset: number
 }
 
 /** 带一级分类信息的二级分类 */

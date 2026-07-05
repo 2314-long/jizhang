@@ -4,15 +4,17 @@ import {
   EditOutlined,
   UnorderedListOutlined,
   PieChartOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons'
 import AddBill from './components/AddBill'
 import BillList from './components/BillList'
 import Statistics from './components/Statistics'
+import CategoryManager from './components/CategoryManager'
 
 const { Header, Content, Sider } = Layout
 const { Title } = Typography
 
-type PageKey = 'add' | 'list' | 'stats'
+type PageKey = 'add' | 'list' | 'stats' | 'categories'
 
 interface MenuItem {
   key: PageKey
@@ -24,6 +26,7 @@ const menuItems: MenuItem[] = [
   { key: 'add', icon: <EditOutlined />, label: '记账' },
   { key: 'list', icon: <UnorderedListOutlined />, label: '账单' },
   { key: 'stats', icon: <PieChartOutlined />, label: '统计' },
+  { key: 'categories', icon: <AppstoreOutlined />, label: '分类管理' },
 ]
 
 function App() {
@@ -52,6 +55,8 @@ function App() {
         return <BillList refreshKey={refreshKey} />
       case 'stats':
         return <Statistics refreshKey={refreshKey} />
+      case 'categories':
+        return <CategoryManager />
       default:
         return null
     }
