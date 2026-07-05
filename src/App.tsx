@@ -5,16 +5,18 @@ import {
   UnorderedListOutlined,
   PieChartOutlined,
   AppstoreOutlined,
+  BugOutlined,
 } from '@ant-design/icons'
 import AddBill from './components/AddBill'
 import BillList from './components/BillList'
 import Statistics from './components/Statistics'
 import CategoryManager from './components/CategoryManager'
+import SnakeGame from './components/SnakeGame'
 
 const { Header, Content, Sider } = Layout
 const { Title } = Typography
 
-type PageKey = 'add' | 'list' | 'stats' | 'categories'
+type PageKey = 'add' | 'list' | 'stats' | 'categories' | 'game'
 
 interface MenuItem {
   key: PageKey
@@ -27,6 +29,7 @@ const menuItems: MenuItem[] = [
   { key: 'list', icon: <UnorderedListOutlined />, label: '账单' },
   { key: 'stats', icon: <PieChartOutlined />, label: '统计' },
   { key: 'categories', icon: <AppstoreOutlined />, label: '分类管理' },
+  { key: 'game', icon: <BugOutlined />, label: '贪吃蛇' },
 ]
 
 function App() {
@@ -57,6 +60,8 @@ function App() {
         return <Statistics refreshKey={refreshKey} />
       case 'categories':
         return <CategoryManager />
+      case 'game':
+        return <SnakeGame />
       default:
         return null
     }
